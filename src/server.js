@@ -25,16 +25,20 @@ const server = http.createServer(app);
 
 const wss = new WebSocket.Server({ server });
 
+const onSocketClose = () => {
+  console.log('Disconnected from the browser ❌');
+};
+
+const sockets = [];
+
 wss.on('connection', socket => {
+  sockets.push(socket);
   console.log('Connected to Browser 🔥');
-  socket.on('close', () => {
-    console.log('Disconnected from the browser ❌');
-  });
+  socket.on('close', onSocketClose);
   socket.on('message', message => {
-    const translatedMessageData = message.toString('utf8');
-    console.log(translatedMessageData);
+    const tMessage = message.toString('utf8');
+    sockets.forEach(aSocket => aSocket.send(tMessage));
   });
-  socket.send('hello!!');
 });
 
 server.listen(PORT, handleListen);

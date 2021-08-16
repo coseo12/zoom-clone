@@ -1,5 +1,5 @@
 import http from 'http';
-import WebSocket from 'ws';
+import SocketIO from 'socket.io';
 import express from 'express';
 
 const PORT = 4000;
@@ -18,40 +18,49 @@ app.get('/*', (req, res) => {
   res.redirect('/');
 });
 
-const handleListen = () =>
-  console.log(`📡 Listening on http://localhost:${PORT}`);
+const httpServer = http.createServer(app);
+const wsServer = SocketIO(httpServer);
 
-const server = http.createServer(app);
-
-const wss = new WebSocket.Server({ server });
-
-const onSocketClose = () => {
-  console.log('Disconnected from the browser ❌');
-};
-
-const sockets = [];
-
-wss.on('connection', socket => {
-  sockets.push(socket);
-  socket['nickname'] = 'Anon';
-  console.log('Connected to Browser 🔥');
-  socket.on('close', onSocketClose);
-  socket.on('message', message => {
-    const tMessage = message.toString('utf8');
-    const parsed = JSON.parse(tMessage);
-    switch (parsed.type) {
-      case 'new_message':
-        sockets.forEach(aSocket =>
-          aSocket.send(`${socket.nickname}: ${parsed.payload}`)
-        );
-        break;
-      case 'nickname':
-        socket['nickname'] = parsed.payload;
-        break;
-      default:
-        console.log('not used type');
-    }
+wsServer.on('connection', socket => {
+  socket.on('enter_room', (msg, done) => {
+    console.log(msg);
+    setTimeout(() => {
+      done();
+    }, 2000);
   });
 });
 
-server.listen(PORT, handleListen);
+// const wss = new WebSocket.Server({ server });
+
+// const onSocketClose = () => {
+//   console.log('Disconnected from the browser ❌');
+// };
+
+// const sockets = [];
+// wss.on('connection', socket => {
+//   sockets.push(socket);
+//   socket['nickname'] = 'Anon';
+//   console.log('Connected to Browser 🔥');
+//   socket.on('close', onSocketClose);
+//   socket.on('message', message => {
+//     const tMessage = message.toString('utf8');
+//     const parsed = JSON.parse(tMessage);
+//     switch (parsed.type) {
+//       case 'new_message':
+//         sockets.forEach(aSocket =>
+//           aSocket.send(`${socket.nickname}: ${parsed.payload}`)
+//         );
+//         break;
+//       case 'nickname':
+//         socket['nickname'] = parsed.payload;
+//         break;
+//       default:
+//         console.log('not used type');
+//     }
+//   });
+// });
+
+const handleListen = () =>
+  console.log(`📡 Listening on http://localhost:${PORT}`);
+
+httpServer.listen(PORT, handleListen);

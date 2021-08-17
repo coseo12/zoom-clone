@@ -9,11 +9,13 @@ Zoom clone using NodeJS, WebRTC and Websockets.
 
 - [MDN](https://developer.mozilla.org/ko/docs/Web/API/WebRTC_API)
 
-Peer A :
-getUserMedia -> addTracks -> createOffer -> setLocalDescription
+- [x] Peer A :
+      getUserMedia -> addTracks -> createOffer -> setLocalDescription
 
-Peer B :
-setRemoteDescription -> getUserMedia -> addTracks -> createAnswer -> setLocalDescription
+- [x] Peer B :
+      setRemoteDescription -> getUserMedia -> addTracks -> createAnswer -> setLocalDescription
+
+- [ ] IceCandidate
 
 ## Library
 

@@ -9,7 +9,7 @@ const camerasSelect = document.querySelector('#cameras');
 let myStream;
 let muted = false;
 let cameraOff = false;
-let roonName;
+let roomName;
 let myPeerConnection;
 
 call.hidden = true;
@@ -17,9 +17,9 @@ call.hidden = true;
 async function getCameras() {
   try {
     const devices = await navigator.mediaDevices.enumerateDevices();
-    const cameras = devices.filter(device => device.kind === 'videoinput');
+    const cameras = devices.filter((device) => device.kind === 'videoinput');
     const currentCamera = myStream.getVideoTracks()[0];
-    cameras.forEach(camera => {
+    cameras.forEach((camera) => {
       const option = document.createElement('option');
       option.value = camera.deviceId;
       option.innerText = camera.label;
@@ -56,7 +56,9 @@ async function getMedia(deviceId) {
 }
 
 function handleMuteClick() {
-  myStream.getAudioTracks().forEach(track => (track.enabled = !track.enabled));
+  myStream
+    .getAudioTracks()
+    .forEach((track) => (track.enabled = !track.enabled));
 
   if (!muted) {
     muteBtn.innerText = 'Unmute';
@@ -68,7 +70,9 @@ function handleMuteClick() {
 }
 
 function handleCameraClick() {
-  myStream.getVideoTracks().forEach(track => (track.enabled = !track.enabled));
+  myStream
+    .getVideoTracks()
+    .forEach((track) => (track.enabled = !track.enabled));
 
   if (cameraOff) {
     cameraBtn.innerText = 'Turn Camera Off';
@@ -91,18 +95,21 @@ camerasSelect.addEventListener('input', handleCameraChange);
 const welcome = document.querySelector('#welcome');
 const welcomeForm = welcome.querySelector('form');
 
-async function startMedia() {
+async function initCall() {
   welcome.hidden = true;
   call.hidden = false;
+  // Step 1.
   await getMedia();
-  makeConnection();
+  // Setp 2.
+  await makeConnection();
 }
 
-function handleWellcomeSubmit(event) {
+async function handleWellcomeSubmit(event) {
   event.preventDefault();
   const input = welcomeForm.querySelector('input');
-  socket.emit('join_room', input.value, startMedia);
-  roonName = input.value;
+  await initCall();
+  socket.emit('join_room', input.value);
+  roomName = input.value;
   input.value = '';
 }
 
@@ -110,20 +117,33 @@ welcomeForm.addEventListener('submit', handleWellcomeSubmit);
 
 // Socket Code
 socket.on('welcome', async () => {
+  // Step 4.
   const offer = await myPeerConnection.createOffer();
   myPeerConnection.setLocalDescription(offer);
   console.log('sent the offer');
-  socket.emit('offer', offer, roonName);
+  socket.emit('offer', offer, roomName);
 });
 
-socket.on('offer', offer => {
-  console.log(offer);
+socket.on('offer', async (offer) => {
+  // Step 5.
+  myPeerConnection.setRemoteDescription(offer);
+  // Step 6.
+  const answer = await myPeerConnection.createAnswer();
+  // Step 7.
+  myPeerConnection.setLocalDescription(answer);
+  socket.emit('answer', answer, roomName);
+});
+
+socket.on('answer', async (answer) => {
+  // Step 8.
+  myPeerConnection.setLocalDescription(answer);
 });
 
 // RTC Code
 function makeConnection() {
+  // Step 3.
   myPeerConnection = new RTCPeerConnection();
   myStream
     .getTracks()
-    .forEach(track => myPeerConnection.addTrack(track, myStream));
+    .forEach((track) => myPeerConnection.addTrack(track, myStream));
 }

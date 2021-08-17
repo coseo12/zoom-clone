@@ -21,6 +21,14 @@ app.get('/*', (req, res) => {
 const httpServer = http.createServer(app);
 const wsServer = SocketIO(httpServer);
 
+wsServer.on('connection', socket => {
+  socket.on('join_room', (roonName, done) => {
+    socket.join(roonName);
+    done();
+    socket.to(roonName).emit('welcome');
+  });
+});
+
 const handleListen = () =>
   console.log(`📡 Listening on http://localhost:${PORT}`);
 

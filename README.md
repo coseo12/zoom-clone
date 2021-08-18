@@ -17,9 +17,9 @@ Zoom clone using NodeJS, WebRTC and Websockets.
 
 - [x] IceCandidate
 
-- [ ] Senders
+- [x] Senders
 
-- [ ] STUN
+- [x] STUN
 
 ## Library
 

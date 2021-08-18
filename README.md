@@ -15,7 +15,11 @@ Zoom clone using NodeJS, WebRTC and Websockets.
 - [x] Peer B :
       setRemoteDescription -> getUserMedia -> addTracks -> createAnswer -> setLocalDescription
 
-- [ ] IceCandidate
+- [x] IceCandidate
+
+- [ ] Senders
+
+- [ ] STUN
 
 ## Library
 
@@ -30,3 +34,5 @@ Zoom clone using NodeJS, WebRTC and Websockets.
 - ${host}/socket.io/socket.io.js
 
 - [AdminUI](https://www.npmjs.com/package/@socket.io/admin-ui)
+
+- [localtunnel](https://www.npmjs.com/package/localtunnel)

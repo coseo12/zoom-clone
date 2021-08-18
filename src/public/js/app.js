@@ -11,6 +11,7 @@ let muted = false;
 let cameraOff = false;
 let roomName;
 let myPeerConnection;
+let myDataChannel;
 
 call.hidden = true;
 
@@ -125,6 +126,11 @@ welcomeForm.addEventListener('submit', handleWellcomeSubmit);
 
 // Socket Code
 socket.on('welcome', async () => {
+  // Data Channel
+  myDataChannel = myPeerConnection.createDataChannel('chat');
+  myDataChannel.addEventListener('message', console.log);
+  console.log('made data channel');
+
   // Step 4.
   const offer = await myPeerConnection.createOffer();
   myPeerConnection.setLocalDescription(offer);
@@ -133,6 +139,12 @@ socket.on('welcome', async () => {
 });
 
 socket.on('offer', async (offer) => {
+  // Data Channel
+  myPeerConnection.addEventListener('datachannel', (event) => {
+    myDataChannel = event.channel;
+    myDataChannel.addEventListener('message', console.log);
+  });
+
   console.log('received the offer');
   // Step 5.
   myPeerConnection.setRemoteDescription(offer);
@@ -162,11 +174,11 @@ function makeConnection() {
     iceServers: [
       {
         urls: [
-          'stunLstun.l.google.com:19302',
-          'stunLstun1.l.google.com:19302',
-          'stunLstun2.l.google.com:19302',
-          'stunLstun3.l.google.com:19302',
-          'stunLstun4.l.google.com:19302',
+          'stun:stun.l.google.com:19302',
+          'stun:stun1.l.google.com:19302',
+          'stun:stun2.l.google.com:19302',
+          'stun:stun3.l.google.com:19302',
+          'stun:stun4.l.google.com:19302',
         ],
       },
     ],

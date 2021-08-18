@@ -21,6 +21,8 @@ Zoom clone using NodeJS, WebRTC and Websockets.
 
 - [x] STUN
 
+- [x] Data Channel
+
 ## Library
 
 ### WS
@@ -36,3 +38,4 @@ Zoom clone using NodeJS, WebRTC and Websockets.
 - [AdminUI](https://www.npmjs.com/package/@socket.io/admin-ui)
 
 - [localtunnel](https://www.npmjs.com/package/localtunnel)
+  lt --port 4000
